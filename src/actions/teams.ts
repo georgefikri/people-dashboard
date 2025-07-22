@@ -3,13 +3,35 @@
 import { revalidatePath } from 'next/cache';
 import { Team, PaginatedResponse, PaginationParams } from '@/types';
 import { MOCK_TEAMS } from '@/constants/mockData';
+import axios from 'axios';
 
 // In-memory storage for demo purposes
 const teams = [...MOCK_TEAMS];
 
+// Configuration for external API
+const API_BASE_URL = process.env.EXTERNAL_API_URL || null;
+const USE_EXTERNAL_API = !!API_BASE_URL;
+
 export async function getTeams(
   params: PaginationParams
 ): Promise<PaginatedResponse<Team>> {
+  // If external API is configured, use it
+  if (USE_EXTERNAL_API) {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/teams`, {
+        params: {
+          page: params.page,
+          limit: params.limit,
+          search: params.search,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('External API failed, falling back to mock data:', error);
+      // Fall back to mock data if external API fails
+    }
+  }
+
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 500));
 
@@ -42,18 +64,25 @@ export async function getTeams(
   };
 }
 
-export async function getTeamById(id: string): Promise<Team | null> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300));
-
-  const team = teams.find((t) => t.id === id);
-  return team || null;
-}
-
 export async function createTeam(
   formData: FormData
 ): Promise<{ success: boolean; error?: string; team?: Team }> {
   try {
+    // If external API is configured, use it
+    if (USE_EXTERNAL_API) {
+      try {
+        const response = await axios.post(`${API_BASE_URL}/teams`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        return response.data;
+      } catch (error) {
+        console.error('External API failed, falling back to mock data:', error);
+        // Fall back to mock data if external API fails
+      }
+    }
+
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -160,4 +189,12 @@ export async function deleteTeam(
   } catch (error) {
     return { success: false, error: 'Failed to delete team' };
   }
+}
+
+export async function getTeamById(id: string): Promise<Team | null> {
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
+  const team = teams.find((t) => t.id === id);
+  return team || null;
 }

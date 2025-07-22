@@ -3,14 +3,36 @@
 import { revalidatePath } from 'next/cache';
 import { TeamMember, PaginatedResponse, PaginationParams, UserRole } from '@/types';
 import { MOCK_TEAM_MEMBERS } from '@/constants/mockData';
+import axios from 'axios';
 
 // In-memory storage for demo purposes
 const teamMembers = [...MOCK_TEAM_MEMBERS];
+
+// Configuration for external API
+const API_BASE_URL = process.env.EXTERNAL_API_URL || null;
+const USE_EXTERNAL_API = !!API_BASE_URL;
 
 export async function getTeamMembers(
   teamId: string,
   params: PaginationParams
 ): Promise<PaginatedResponse<TeamMember>> {
+  // If external API is configured, use it
+  if (USE_EXTERNAL_API) {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/teams/${teamId}/members`, {
+        params: {
+          page: params.page,
+          limit: params.limit,
+          search: params.search,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('External API failed, falling back to mock data:', error);
+      // Fall back to mock data if external API fails
+    }
+  }
+
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 400));
 
@@ -49,6 +71,21 @@ export async function addTeamMember(
   formData: FormData
 ): Promise<{ success: boolean; error?: string; member?: TeamMember }> {
   try {
+    // If external API is configured, use it
+    if (USE_EXTERNAL_API) {
+      try {
+        const response = await axios.post(`${API_BASE_URL}/members`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        return response.data;
+      } catch (error) {
+        console.error('External API failed, falling back to mock data:', error);
+        // Fall back to mock data if external API fails
+      }
+    }
+
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
