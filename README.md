@@ -1,6 +1,6 @@
 # Team Management Application
 
-A modern team management application built with Next.js 14, featuring team creation, member management, and real-time updates.
+A modern team management application built with Next.js 15, featuring team creation, member management, and real-time updates.
 
 ## 🚀 Features
 
@@ -16,7 +16,7 @@ A modern team management application built with Next.js 14, featuring team creat
 
 ### **Frontend**
 
-- **Next.js 14** - React framework with App Router
+- **Next.js 15** - React framework with App Router
 - **TypeScript** - Type-safe development
 - **Tailwind CSS** - Utility-first CSS framework
 - **shadcn/ui** - Beautiful, accessible components
