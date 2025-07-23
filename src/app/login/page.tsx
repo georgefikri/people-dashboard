@@ -24,7 +24,6 @@ export default function LoginPage() {
   const { isLoading, setLoading } = useUIStore();
   const router = useRouter();
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
       router.push("/teams");
@@ -48,7 +47,6 @@ export default function LoginPage() {
     }
   };
 
-  // Demo credentials helper
   const fillDemoCredentials = () => {
     setEmail("admin@demo.com");
     setPassword("admin123");

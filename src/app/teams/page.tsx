@@ -63,7 +63,6 @@ export default function TeamsPage() {
   }, [currentPage, isAuthenticated]);
 
   useEffect(() => {
-    // Reset to first page when search changes
     setCurrentPage(1);
   }, [searchQuery]);
 
@@ -92,7 +91,7 @@ export default function TeamsPage() {
       const result = await deleteTeam(teamId);
       if (result.success) {
         toast.success("Team deleted successfully!");
-        await loadTeams(); // Refresh the list
+        await loadTeams();
       } else {
         toast.error(result.error || "Failed to delete team");
       }

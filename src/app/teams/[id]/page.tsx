@@ -105,7 +105,6 @@ export default function TeamDetailPage() {
   }, [currentPage, isAuthenticated, teamId]);
 
   useEffect(() => {
-    // Reset to first page when search changes
     setCurrentPage(1);
   }, [searchQuery]);
 
@@ -129,7 +128,6 @@ export default function TeamDetailPage() {
       return;
     }
 
-    // Optimistic update
     const originalMembers = [...optimisticMembers];
     setOptimisticMembers((prev) => prev.filter((m) => m.id !== memberId));
 
@@ -137,21 +135,18 @@ export default function TeamDetailPage() {
       const result = await removeMember(memberId);
       if (result.success) {
         toast.success("Member removed successfully!");
-        await loadMembers(); // Refresh the actual data
+        await loadMembers();
       } else {
-        // Revert optimistic update
         setOptimisticMembers(originalMembers);
         toast.error(result.error || "Failed to remove member");
       }
     } catch (error) {
-      // Revert optimistic update
       setOptimisticMembers(originalMembers);
       toast.error("Failed to remove member");
     }
   };
 
   const handleUpdateRole = async (memberId: string, newRole: UserRole) => {
-    // Optimistic update
     const originalMembers = [...optimisticMembers];
     setOptimisticMembers((prev) =>
       prev.map((m) => (m.id === memberId ? { ...m, role: newRole } : m))
@@ -161,14 +156,12 @@ export default function TeamDetailPage() {
       const result = await updateMemberRole(memberId, newRole);
       if (result.success) {
         toast.success("Member role updated successfully!");
-        await loadMembers(); // Refresh the actual data
+        await loadMembers();
       } else {
-        // Revert optimistic update
         setOptimisticMembers(originalMembers);
         toast.error(result.error || "Failed to update role");
       }
     } catch (error) {
-      // Revert optimistic update
       setOptimisticMembers(originalMembers);
       toast.error("Failed to update role");
     }

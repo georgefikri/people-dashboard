@@ -1,23 +1,21 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/stores/authStore';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/stores/authStore";
 
 export default function HomePage() {
   const { isAuthenticated } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect based on authentication status
     if (isAuthenticated) {
-      router.push('/teams');
+      router.push("/teams");
     } else {
-      router.push('/login');
+      router.push("/login");
     }
   }, [isAuthenticated, router]);
 
-  // Show loading state while redirecting
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
