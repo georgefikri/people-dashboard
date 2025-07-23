@@ -77,7 +77,7 @@ src/
 ├── stores/       # Zustand state management
 ├── types/        # TypeScript type definitions
 ├── constants/    # Mock data and constants
-└── tests/        # Unit and integration tests
+└── tests/        # Unit tests
 ```
 
 ## 🔧 Configuration
