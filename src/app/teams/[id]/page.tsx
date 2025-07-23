@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -13,18 +13,30 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Navigation } from '@/components/Navigation';
-import { AddMemberModal } from '@/components/modals/AddMemberModal';
-import { useRequireAuth } from '@/hooks/useAuth';
-import { useAuthStore } from '@/stores/authStore';
-import { useUIStore } from '@/stores/uiStore';
-import { getTeamById } from '@/actions/teams';
-import { getTeamMembers, removeMember, updateMemberRole } from '@/actions/members';
-import { Team, TeamMember, PaginatedResponse, UserRole } from '@/types';
-import { ArrowLeft, Search, Edit, Trash2, Users, Crown, User } from 'lucide-react';
-import Link from 'next/link';
-import { toast } from 'sonner';
+} from "@/components/ui/table";
+import { Navigation } from "@/components/Navigation";
+import { AddMemberModal } from "@/components/modals/AddMemberModal";
+import { useRequireAuth } from "@/hooks/useAuth";
+import { useAuthStore } from "@/stores/authStore";
+import { useUIStore } from "@/stores/uiStore";
+import { getTeamById } from "@/actions/teams";
+import {
+  getTeamMembers,
+  removeMember,
+  updateMemberRole,
+} from "@/actions/members";
+import { Team, TeamMember, PaginatedResponse, UserRole } from "@/types";
+import {
+  ArrowLeft,
+  Search,
+  Edit,
+  Trash2,
+  Users,
+  Crown,
+  User,
+} from "lucide-react";
+import Link from "next/link";
+import { toast } from "sonner";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -45,7 +57,7 @@ export default function TeamDetailPage() {
     limit: ITEMS_PER_PAGE,
     totalPages: 0,
   });
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [optimisticMembers, setOptimisticMembers] = useState<TeamMember[]>([]);
 
@@ -53,13 +65,13 @@ export default function TeamDetailPage() {
     try {
       const teamData = await getTeamById(teamId);
       if (!teamData) {
-        router.push('/teams');
+        router.push("/teams");
         return;
       }
       setTeam(teamData);
     } catch (error) {
-      console.error('Failed to load team:', error);
-      router.push('/teams');
+      console.error("Failed to load team:", error);
+      router.push("/teams");
     }
   };
 
@@ -74,7 +86,7 @@ export default function TeamDetailPage() {
       setMembers(result);
       setOptimisticMembers(result.data);
     } catch (error) {
-      console.error('Failed to load members:', error);
+      console.error("Failed to load members:", error);
     } finally {
       setLoading(false);
     }
@@ -110,7 +122,9 @@ export default function TeamDetailPage() {
 
   const handleRemoveMember = async (memberId: string, memberName: string) => {
     if (
-      !window.confirm(`Are you sure you want to remove "${memberName}" from the team?`)
+      !window.confirm(
+        `Are you sure you want to remove "${memberName}" from the team?`
+      )
     ) {
       return;
     }
@@ -122,17 +136,17 @@ export default function TeamDetailPage() {
     try {
       const result = await removeMember(memberId);
       if (result.success) {
-        toast.success('Member removed successfully!');
+        toast.success("Member removed successfully!");
         await loadMembers(); // Refresh the actual data
       } else {
         // Revert optimistic update
         setOptimisticMembers(originalMembers);
-        toast.error(result.error || 'Failed to remove member');
+        toast.error(result.error || "Failed to remove member");
       }
     } catch (error) {
       // Revert optimistic update
       setOptimisticMembers(originalMembers);
-      toast.error('Failed to remove member');
+      toast.error("Failed to remove member");
     }
   };
 
@@ -146,17 +160,17 @@ export default function TeamDetailPage() {
     try {
       const result = await updateMemberRole(memberId, newRole);
       if (result.success) {
-        toast.success('Member role updated successfully!');
+        toast.success("Member role updated successfully!");
         await loadMembers(); // Refresh the actual data
       } else {
         // Revert optimistic update
         setOptimisticMembers(originalMembers);
-        toast.error(result.error || 'Failed to update role');
+        toast.error(result.error || "Failed to update role");
       }
     } catch (error) {
       // Revert optimistic update
       setOptimisticMembers(originalMembers);
-      toast.error('Failed to update role');
+      toast.error("Failed to update role");
     }
   };
 
@@ -174,17 +188,20 @@ export default function TeamDetailPage() {
 
   if (!isAuthenticated || !team) return null;
 
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === "admin";
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navigation />
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Navigation */}
         <div className="mb-6">
           <Link href="/teams">
-            <Button variant="outline" className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              className="flex items-center space-x-2 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-white"
+            >
               <ArrowLeft className="h-4 w-4" />
               <span>Back to Teams</span>
             </Button>
@@ -202,7 +219,9 @@ export default function TeamDetailPage() {
                     <span>{team.name}</span>
                   </CardTitle>
                   {team.description && (
-                    <p className="text-gray-600 mt-2">{team.description}</p>
+                    <p className="text-gray-600 dark:text-gray-300 mt-2">
+                      {team.description}
+                    </p>
                   )}
                 </div>
                 {isAdmin && (
@@ -213,25 +232,37 @@ export default function TeamDetailPage() {
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
-                  <p className="text-sm text-gray-600">Team Lead</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    Team Lead
+                  </p>
                   <div className="flex items-center space-x-2 mt-1">
                     <Crown className="h-4 w-4 text-yellow-500" />
-                    <span className="font-medium">{team.leadName}</span>
+                    <span className="font-medium dark:text-white">
+                      {team.leadName}
+                    </span>
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Total Members</p>
-                  <p className="font-medium mt-1">{team.memberCount}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    Total Members
+                  </p>
+                  <p className="font-medium mt-1 dark:text-white">
+                    {team.memberCount}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Created</p>
-                  <p className="font-medium mt-1">
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    Created
+                  </p>
+                  <p className="font-medium mt-1 dark:text-white">
                     {team.createdAt.toLocaleDateString()}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Last Updated</p>
-                  <p className="font-medium mt-1">
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    Last Updated
+                  </p>
+                  <p className="font-medium mt-1 dark:text-white">
                     {team.updatedAt.toLocaleDateString()}
                   </p>
                 </div>
@@ -243,7 +274,9 @@ export default function TeamDetailPage() {
         {/* Members Section */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-semibold">Team Members</h3>
+            <h3 className="text-xl font-semibold dark:text-white">
+              Team Members
+            </h3>
           </div>
 
           {/* Search */}
@@ -255,7 +288,7 @@ export default function TeamDetailPage() {
                   placeholder="Search members by name, email, or role..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyPress={(e) => e.key === "Enter" && handleSearch()}
                   className="pl-10"
                 />
               </div>
@@ -270,14 +303,18 @@ export default function TeamDetailPage() {
             <CardContent className="p-0">
               {isLoading ? (
                 <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 mx-auto"></div>
-                  <p className="mt-2 text-gray-600">Loading members...</p>
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 dark:border-white mx-auto"></div>
+                  <p className="mt-2 text-gray-600 dark:text-gray-300">
+                    Loading members...
+                  </p>
                 </div>
               ) : optimisticMembers.length === 0 ? (
                 <div className="text-center py-8">
-                  <User className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-600">
-                    {searchQuery ? 'No members found' : 'No members in this team yet'}
+                  <User className="h-8 w-8 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
+                  <p className="text-gray-600 dark:text-gray-300">
+                    {searchQuery
+                      ? "No members found"
+                      : "No members in this team yet"}
                   </p>
                 </div>
               ) : (
@@ -288,22 +325,30 @@ export default function TeamDetailPage() {
                       <TableHead>Email</TableHead>
                       <TableHead>Role</TableHead>
                       <TableHead>Joined</TableHead>
-                      {isAdmin && <TableHead className="text-right">Actions</TableHead>}
+                      {isAdmin && (
+                        <TableHead className="text-right">Actions</TableHead>
+                      )}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {optimisticMembers.map((member) => (
                       <TableRow key={member.id}>
-                        <TableCell className="font-medium">{member.name}</TableCell>
+                        <TableCell className="font-medium">
+                          {member.name}
+                        </TableCell>
                         <TableCell>{member.email}</TableCell>
                         <TableCell>
                           <Badge
-                            variant={member.role === 'admin' ? 'default' : 'secondary'}
+                            variant={
+                              member.role === "admin" ? "default" : "secondary"
+                            }
                           >
                             {member.role}
                           </Badge>
                         </TableCell>
-                        <TableCell>{member.joinedAt.toLocaleDateString()}</TableCell>
+                        <TableCell>
+                          {member.joinedAt.toLocaleDateString()}
+                        </TableCell>
                         {isAdmin && (
                           <TableCell className="text-right">
                             <div className="flex space-x-2 justify-end">
@@ -313,17 +358,20 @@ export default function TeamDetailPage() {
                                 onClick={() =>
                                   handleUpdateRole(
                                     member.id,
-                                    member.role === 'admin' ? 'member' : 'admin'
+                                    member.role === "admin" ? "member" : "admin"
                                   )
                                 }
+                                className="dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-white"
                               >
                                 <Edit className="h-4 w-4" />
                               </Button>
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => handleRemoveMember(member.id, member.name)}
-                                className="text-red-600 hover:text-red-700"
+                                onClick={() =>
+                                  handleRemoveMember(member.id, member.name)
+                                }
+                                className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 dark:border-red-600 dark:hover:bg-red-900/20"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -345,18 +393,21 @@ export default function TeamDetailPage() {
                 variant="outline"
                 onClick={handlePrevPage}
                 disabled={currentPage === 1 || isLoading}
+                className="dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-white"
               >
                 Previous
               </Button>
 
-              <span className="text-sm text-gray-600">
-                Page {currentPage} of {members.totalPages} ({members.total} total members)
+              <span className="text-sm text-gray-600 dark:text-gray-300">
+                Page {currentPage} of {members.totalPages} ({members.total}{" "}
+                total members)
               </span>
 
               <Button
                 variant="outline"
                 onClick={handleNextPage}
                 disabled={currentPage === members.totalPages || isLoading}
+                className="dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-white"
               >
                 Next
               </Button>
